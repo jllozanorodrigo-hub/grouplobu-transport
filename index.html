@@ -284,6 +284,50 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .sync-ok{background:#EBF3EE;color:#4A7C59;border:1px solid #BCDAC8;}
 .sync-pending{background:#FBF3E3;color:#8B6020;border:1px solid #E5D0A0;}
 .sync-error{background:#F5EAEA;color:#A03030;border:1px solid #E5C0C0;}
+
+/* CHECK ROWS (limpieza / niveles / documentación) */
+.check-group{background:var(--cream);border:1px solid var(--border);border-radius:12px;padding:10px 12px;margin-bottom:10px;}
+.check-group-title{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;}
+.check-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);}
+.check-row:last-child{border-bottom:none;}
+.check-row-label{flex:1;font-size:13px;color:var(--text);font-weight:500;}
+.check-row input[type=checkbox]{width:20px;height:20px;accent-color:var(--gold);cursor:pointer;}
+.check-seg{display:flex;gap:4px;background:var(--surface2);border-radius:8px;padding:3px;border:1px solid var(--border);}
+.check-seg label{flex:1;font-size:11px;font-weight:600;color:var(--muted);padding:5px 8px;border-radius:6px;cursor:pointer;text-align:center;min-width:42px;transition:all .15s;}
+.check-seg input{display:none;}
+.check-seg input:checked + label.ok{background:var(--green);color:#fff;}
+.check-seg input:checked + label.bajo{background:var(--warn);color:#fff;}
+.check-seg input:checked + label.rell{background:var(--blue);color:#fff;}
+.check-seg input:checked + label.cad{background:var(--red);color:#fff;}
+.check-seg input:checked + label.ren{background:var(--warn);color:#fff;}
+.check-status-ok{color:var(--green);font-weight:700;}
+.check-status-bajo{color:var(--warn);font-weight:700;}
+.check-status-rell{color:var(--blue);font-weight:700;}
+.check-status-cad{color:var(--red);font-weight:700;}
+.check-status-ren{color:var(--warn);font-weight:700;}
+.check-pill{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;margin-right:3px;}
+.check-pill.ok{background:var(--green-bg);color:var(--green);border:1px solid #BCDAC8;}
+.check-pill.bajo{background:var(--warn-bg);color:var(--warn);border:1px solid #E5D0A0;}
+.check-pill.rell{background:var(--blue-bg);color:var(--blue);border:1px solid #BFD4E3;}
+.check-pill.cad{background:var(--red-bg);color:var(--red);border:1px solid #E5C0C0;}
+.check-pill.ren{background:var(--warn-bg);color:var(--warn);border:1px solid #E5D0A0;}
+
+/* PHOTOS */
+.photo-input-wrap{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.photo-input-btn{flex:1;padding:10px 14px;background:var(--surface2);border:1.5px dashed var(--border2);border-radius:10px;color:var(--text2);font-size:13px;font-weight:600;cursor:pointer;text-align:center;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:8px;}
+.photo-input-btn:hover{border-color:var(--gold);color:var(--gold);}
+.photo-input-btn input{display:none;}
+.photo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:6px;margin-bottom:10px;}
+.photo-thumb{position:relative;aspect-ratio:1;border-radius:8px;overflow:hidden;border:1px solid var(--border);background:var(--cream);}
+.photo-thumb img{width:100%;height:100%;object-fit:cover;cursor:pointer;}
+.photo-del{position:absolute;top:3px;right:3px;width:20px;height:20px;border-radius:50%;background:rgba(160,48,48,.9);color:#fff;border:none;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;}
+.photo-empty{grid-column:1/-1;font-size:12px;color:var(--muted);text-align:center;padding:10px;}
+
+/* LIGHTBOX */
+.lightbox{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:1000;display:none;align-items:center;justify-content:center;padding:20px;cursor:pointer;}
+.lightbox.open{display:flex;}
+.lightbox img{max-width:100%;max-height:100%;border-radius:8px;box-shadow:0 8px 40px rgba(0,0,0,.6);}
+.lightbox-close{position:fixed;top:20px;right:20px;width:40px;height:40px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);border-radius:50%;color:#fff;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
 </style>
 
 <!-- Firebase SDK -->
@@ -335,6 +379,9 @@ function startRealtimeSync() {
       if (data.repostajes)    window.DB.repostajes    = Object.values(data.repostajes);
       if (data.incidencias)   window.DB.incidencias   = Object.values(data.incidencias);
       if (data.mantenimientos) window.DB.mantenimientos = Object.values(data.mantenimientos);
+      if (data.limpiezas)     window.DB.limpiezas     = Object.values(data.limpiezas);
+      if (data.niveles)       window.DB.niveles       = Object.values(data.niveles);
+      if (data.documentos)    window.DB.documentos    = Object.values(data.documentos);
       if (data.nextId)        window.DB.nextId        = data.nextId;
       if (data.sysUsers)      window.SYS_USERS        = Object.values(data.sysUsers);
       if (data.nextSysId)     window.nextSysId        = data.nextSysId;
@@ -364,6 +411,9 @@ async function pushDB() {
       repostajes:     toObj(window.DB.repostajes),
       incidencias:    toObj(window.DB.incidencias),
       mantenimientos: toObj(window.DB.mantenimientos),
+      limpiezas:      toObj(window.DB.limpiezas || []),
+      niveles:        toObj(window.DB.niveles || []),
+      documentos:     toObj(window.DB.documentos || []),
       nextId:         window.DB.nextId,
       sysUsers:       toObj(window.SYS_USERS),
       nextSysId:      window.nextSysId,
@@ -390,6 +440,9 @@ async function initFirebase() {
       if (data.repostajes)     window.DB.repostajes    = Object.values(data.repostajes);
       if (data.incidencias)    window.DB.incidencias   = Object.values(data.incidencias);
       if (data.mantenimientos) window.DB.mantenimientos= Object.values(data.mantenimientos);
+      if (data.limpiezas)      window.DB.limpiezas     = Object.values(data.limpiezas);
+      if (data.niveles)        window.DB.niveles       = Object.values(data.niveles);
+      if (data.documentos)     window.DB.documentos    = Object.values(data.documentos);
       if (data.nextId)         window.DB.nextId        = data.nextId;
       if (data.sysUsers)       window.SYS_USERS        = Object.values(data.sysUsers);
       if (data.nextSysId)      window.nextSysId        = data.nextSysId;
@@ -678,6 +731,132 @@ window.addEventListener('DOMContentLoaded', () => {
   </div>
 </div>
 
+<!-- MODAL LIMPIEZA -->
+<div class="modal-overlay" id="modal-limpieza" onclick="closeBg(event,'modal-limpieza')">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="modal-limp-title">🧼 Nuevo Registro de Limpieza</div>
+    <input type="hidden" id="limp-edit-id">
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Fecha</label><input class="form-input" type="date" id="limp-fecha"></div>
+      <div class="form-group"><label class="form-label">Vehículo *</label><select class="form-select" id="limp-vehiculo"><option value="">-- Selecciona --</option></select></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Tipo</label><select class="form-select" id="limp-tipo"><option value="Completa">🧽 Completa</option><option value="Interior">🛋️ Interior</option><option value="Exterior">🚿 Exterior</option><option value="Rápida">⚡ Rápida</option></select></div>
+      <div class="form-group"><label class="form-label">Km</label><input class="form-input" type="number" id="limp-km" placeholder="85000"></div>
+    </div>
+    <div class="check-group">
+      <div class="check-group-title">✔️ Checklist</div>
+      <div class="check-row"><span class="check-row-label">Aspirado suelo e interior</span><input type="checkbox" id="limp-c-aspirar"></div>
+      <div class="check-row"><span class="check-row-label">Asientos limpios</span><input type="checkbox" id="limp-c-asientos"></div>
+      <div class="check-row"><span class="check-row-label">Cristales limpios</span><input type="checkbox" id="limp-c-cristales"></div>
+      <div class="check-row"><span class="check-row-label">Salpicadero y paneles</span><input type="checkbox" id="limp-c-salpic"></div>
+      <div class="check-row"><span class="check-row-label">Papeleras vaciadas</span><input type="checkbox" id="limp-c-papel"></div>
+      <div class="check-row"><span class="check-row-label">Carrocería exterior lavada</span><input type="checkbox" id="limp-c-carroc"></div>
+      <div class="check-row"><span class="check-row-label">Llantas y neumáticos</span><input type="checkbox" id="limp-c-llantas"></div>
+      <div class="check-row"><span class="check-row-label">Desinfectado (interior)</span><input type="checkbox" id="limp-c-desinf"></div>
+    </div>
+    <div class="form-group"><label class="form-label">Observaciones</label><input class="form-input" id="limp-obs" placeholder="Notas opcionales"></div>
+    <div class="form-group">
+      <label class="form-label">📷 Fotos</label>
+      <label class="photo-input-btn">📸 Añadir foto<input type="file" accept="image/*" capture="environment" multiple onchange="handlePhotoInput(event,'limp')"></label>
+      <div class="photo-grid" id="photos-limp"></div>
+    </div>
+    <button class="btn-submit" onclick="guardarLimpieza()">Guardar Limpieza</button>
+    <button class="btn-cancel" onclick="closeModal('modal-limpieza')">Cancelar</button>
+  </div>
+</div>
+
+<!-- MODAL NIVELES DE LÍQUIDOS -->
+<div class="modal-overlay" id="modal-niveles" onclick="closeBg(event,'modal-niveles')">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="modal-niv-title">💧 Registro de Niveles</div>
+    <input type="hidden" id="niv-edit-id">
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Fecha</label><input class="form-input" type="date" id="niv-fecha"></div>
+      <div class="form-group"><label class="form-label">Vehículo *</label><select class="form-select" id="niv-vehiculo"><option value="">-- Selecciona --</option></select></div>
+    </div>
+    <div class="form-group"><label class="form-label">Km</label><input class="form-input" type="number" id="niv-km" placeholder="85000"></div>
+    <div class="check-group">
+      <div class="check-group-title">💧 Niveles de líquidos</div>
+      <div class="check-row"><span class="check-row-label">Aceite motor</span>
+        <div class="check-seg"><input type="radio" name="niv-aceite" id="niv-aceite-ok" value="OK" checked><label for="niv-aceite-ok" class="ok">OK</label><input type="radio" name="niv-aceite" id="niv-aceite-bajo" value="Bajo"><label for="niv-aceite-bajo" class="bajo">Bajo</label><input type="radio" name="niv-aceite" id="niv-aceite-rell" value="Rellenado"><label for="niv-aceite-rell" class="rell">Rell.</label></div>
+      </div>
+      <div class="check-row"><span class="check-row-label">Refrigerante</span>
+        <div class="check-seg"><input type="radio" name="niv-refri" id="niv-refri-ok" value="OK" checked><label for="niv-refri-ok" class="ok">OK</label><input type="radio" name="niv-refri" id="niv-refri-bajo" value="Bajo"><label for="niv-refri-bajo" class="bajo">Bajo</label><input type="radio" name="niv-refri" id="niv-refri-rell" value="Rellenado"><label for="niv-refri-rell" class="rell">Rell.</label></div>
+      </div>
+      <div class="check-row"><span class="check-row-label">Líquido de frenos</span>
+        <div class="check-seg"><input type="radio" name="niv-frenos" id="niv-frenos-ok" value="OK" checked><label for="niv-frenos-ok" class="ok">OK</label><input type="radio" name="niv-frenos" id="niv-frenos-bajo" value="Bajo"><label for="niv-frenos-bajo" class="bajo">Bajo</label><input type="radio" name="niv-frenos" id="niv-frenos-rell" value="Rellenado"><label for="niv-frenos-rell" class="rell">Rell.</label></div>
+      </div>
+      <div class="check-row"><span class="check-row-label">AdBlue</span>
+        <div class="check-seg"><input type="radio" name="niv-adblue" id="niv-adblue-ok" value="OK" checked><label for="niv-adblue-ok" class="ok">OK</label><input type="radio" name="niv-adblue" id="niv-adblue-bajo" value="Bajo"><label for="niv-adblue-bajo" class="bajo">Bajo</label><input type="radio" name="niv-adblue" id="niv-adblue-rell" value="Rellenado"><label for="niv-adblue-rell" class="rell">Rell.</label></div>
+      </div>
+      <div class="check-row"><span class="check-row-label">Limpiaparabrisas</span>
+        <div class="check-seg"><input type="radio" name="niv-limp" id="niv-limp-ok" value="OK" checked><label for="niv-limp-ok" class="ok">OK</label><input type="radio" name="niv-limp" id="niv-limp-bajo" value="Bajo"><label for="niv-limp-bajo" class="bajo">Bajo</label><input type="radio" name="niv-limp" id="niv-limp-rell" value="Rellenado"><label for="niv-limp-rell" class="rell">Rell.</label></div>
+      </div>
+      <div class="check-row"><span class="check-row-label">Dirección asistida</span>
+        <div class="check-seg"><input type="radio" name="niv-direc" id="niv-direc-ok" value="OK" checked><label for="niv-direc-ok" class="ok">OK</label><input type="radio" name="niv-direc" id="niv-direc-bajo" value="Bajo"><label for="niv-direc-bajo" class="bajo">Bajo</label><input type="radio" name="niv-direc" id="niv-direc-rell" value="Rellenado"><label for="niv-direc-rell" class="rell">Rell.</label></div>
+      </div>
+    </div>
+    <div class="form-group"><label class="form-label">Observaciones</label><input class="form-input" id="niv-obs" placeholder="Notas opcionales"></div>
+    <div class="form-group">
+      <label class="form-label">📷 Fotos</label>
+      <label class="photo-input-btn">📸 Añadir foto<input type="file" accept="image/*" capture="environment" multiple onchange="handlePhotoInput(event,'niv')"></label>
+      <div class="photo-grid" id="photos-niv"></div>
+    </div>
+    <button class="btn-submit" onclick="guardarNiveles()">Guardar Niveles</button>
+    <button class="btn-cancel" onclick="closeModal('modal-niveles')">Cancelar</button>
+  </div>
+</div>
+
+<!-- MODAL DOCUMENTACIÓN -->
+<div class="modal-overlay" id="modal-documentos" onclick="closeBg(event,'modal-documentos')">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="modal-doc-title">📄 Revisión de Documentación</div>
+    <input type="hidden" id="doc-edit-id">
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Fecha revisión</label><input class="form-input" type="date" id="doc-fecha"></div>
+      <div class="form-group"><label class="form-label">Vehículo *</label><select class="form-select" id="doc-vehiculo"><option value="">-- Selecciona --</option></select></div>
+    </div>
+    <div class="check-group">
+      <div class="check-group-title">📄 Estado de documentos</div>
+      <div class="check-row"><span class="check-row-label">ITV</span>
+        <div class="check-seg"><input type="radio" name="doc-itv" id="doc-itv-ok" value="OK" checked><label for="doc-itv-ok" class="ok">OK</label><input type="radio" name="doc-itv" id="doc-itv-ren" value="Renovar"><label for="doc-itv-ren" class="ren">Renov.</label><input type="radio" name="doc-itv" id="doc-itv-cad" value="Caducado"><label for="doc-itv-cad" class="cad">Cad.</label></div>
+      </div>
+      <div class="form-group"><label class="form-label">Caducidad ITV</label><input class="form-input" type="date" id="doc-itv-fecha"></div>
+      <div class="check-row"><span class="check-row-label">Seguro</span>
+        <div class="check-seg"><input type="radio" name="doc-seg" id="doc-seg-ok" value="OK" checked><label for="doc-seg-ok" class="ok">OK</label><input type="radio" name="doc-seg" id="doc-seg-ren" value="Renovar"><label for="doc-seg-ren" class="ren">Renov.</label><input type="radio" name="doc-seg" id="doc-seg-cad" value="Caducado"><label for="doc-seg-cad" class="cad">Cad.</label></div>
+      </div>
+      <div class="form-group"><label class="form-label">Caducidad seguro</label><input class="form-input" type="date" id="doc-seg-fecha"></div>
+      <div class="check-row"><span class="check-row-label">Permiso circulación</span>
+        <div class="check-seg"><input type="radio" name="doc-perm" id="doc-perm-ok" value="OK" checked><label for="doc-perm-ok" class="ok">OK</label><input type="radio" name="doc-perm" id="doc-perm-ren" value="Renovar"><label for="doc-perm-ren" class="ren">Renov.</label><input type="radio" name="doc-perm" id="doc-perm-cad" value="Caducado"><label for="doc-perm-cad" class="cad">Cad.</label></div>
+      </div>
+      <div class="check-row"><span class="check-row-label">Tarjeta de transporte</span>
+        <div class="check-seg"><input type="radio" name="doc-tt" id="doc-tt-ok" value="OK" checked><label for="doc-tt-ok" class="ok">OK</label><input type="radio" name="doc-tt" id="doc-tt-ren" value="Renovar"><label for="doc-tt-ren" class="ren">Renov.</label><input type="radio" name="doc-tt" id="doc-tt-cad" value="Caducado"><label for="doc-tt-cad" class="cad">Cad.</label></div>
+      </div>
+      <div class="check-row"><span class="check-row-label">Tacógrafo</span>
+        <div class="check-seg"><input type="radio" name="doc-taco" id="doc-taco-ok" value="OK" checked><label for="doc-taco-ok" class="ok">OK</label><input type="radio" name="doc-taco" id="doc-taco-ren" value="Renovar"><label for="doc-taco-ren" class="ren">Renov.</label><input type="radio" name="doc-taco" id="doc-taco-cad" value="Caducado"><label for="doc-taco-cad" class="cad">Cad.</label></div>
+      </div>
+      <div class="check-row"><span class="check-row-label">Extintor</span>
+        <div class="check-seg"><input type="radio" name="doc-ext" id="doc-ext-ok" value="OK" checked><label for="doc-ext-ok" class="ok">OK</label><input type="radio" name="doc-ext" id="doc-ext-ren" value="Renovar"><label for="doc-ext-ren" class="ren">Renov.</label><input type="radio" name="doc-ext" id="doc-ext-cad" value="Caducado"><label for="doc-ext-cad" class="cad">Cad.</label></div>
+      </div>
+      <div class="check-row"><span class="check-row-label">Botiquín</span>
+        <div class="check-seg"><input type="radio" name="doc-bot" id="doc-bot-ok" value="OK" checked><label for="doc-bot-ok" class="ok">OK</label><input type="radio" name="doc-bot" id="doc-bot-ren" value="Renovar"><label for="doc-bot-ren" class="ren">Renov.</label><input type="radio" name="doc-bot" id="doc-bot-cad" value="Caducado"><label for="doc-bot-cad" class="cad">Cad.</label></div>
+      </div>
+    </div>
+    <div class="form-group"><label class="form-label">Observaciones</label><input class="form-input" id="doc-obs" placeholder="Notas opcionales"></div>
+    <div class="form-group">
+      <label class="form-label">📷 Fotos (documentos)</label>
+      <label class="photo-input-btn">📸 Añadir foto<input type="file" accept="image/*" capture="environment" multiple onchange="handlePhotoInput(event,'doc')"></label>
+      <div class="photo-grid" id="photos-doc"></div>
+    </div>
+    <button class="btn-submit" onclick="guardarDocumentos()">Guardar Revisión</button>
+    <button class="btn-cancel" onclick="closeModal('modal-documentos')">Cancelar</button>
+  </div>
+</div>
+
 <!-- MODAL USUARIO SISTEMA -->
 <div class="modal-overlay" id="modal-sys-user" onclick="closeBg(event,'modal-sys-user')">
   <div class="modal">
@@ -700,6 +879,12 @@ window.addEventListener('DOMContentLoaded', () => {
 </div>
 
 <div class="toast" id="toast"></div>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <button class="lightbox-close" onclick="closeLightbox()">✕</button>
+  <img id="lightbox-img" onclick="event.stopPropagation()">
+</div>
 
 <script>
 // ══ AUTH ══
@@ -1077,11 +1262,35 @@ function fmtFecha(f){const[y,m,d]=f.split('-');const ms=['enero','febrero','marz
 function updateGrupoSelects(){const opts=DB.grupos.map(g=>`<option value="${g.id}">${g.nombre}</option>`).join('');document.getElementById('ruta-grupo-sel').innerHTML=`<option value="">-- Sin grupo --</option>${opts}`;document.getElementById('u-grupo').innerHTML=`<option value="">-- Sin grupo --</option>${opts}`;}
 function toggleCard(key){openCards[key]=!openCards[key];const sec=document.querySelector('.section.active');if(sec&&sec.id==='sec-revision')renderRevision();else if(sec&&sec.id==='sec-vehiculo')renderVehiculo();else if(sec&&sec.id==='sec-admin')renderAdminPanel();else renderAll();}
 function openModalNew(id){
-  const hidMap={'modal-ruta':'ruta-edit-id','modal-grupo':'grupo-edit-id','modal-usuario':'usuario-edit-id','modal-repostaje':'rep-edit-id','modal-incidencia':'inc-edit-id','modal-mantenimiento':'mant-edit-id'};
+  const hidMap={'modal-ruta':'ruta-edit-id','modal-grupo':'grupo-edit-id','modal-usuario':'usuario-edit-id','modal-repostaje':'rep-edit-id','modal-incidencia':'inc-edit-id','modal-mantenimiento':'mant-edit-id','modal-limpieza':'limp-edit-id','modal-niveles':'niv-edit-id','modal-documentos':'doc-edit-id'};
   if(hidMap[id])document.getElementById(hidMap[id]).value='';
   if(id==='modal-repostaje'){document.getElementById('modal-repostaje-title').textContent='⛽ Nuevo Repostaje';['rep-km','rep-litros','rep-precio','rep-importe','rep-gasolinera','rep-obs'].forEach(f=>document.getElementById(f).value='');document.getElementById('rep-fecha').value=new Date().toISOString().split('T')[0];}
   if(id==='modal-incidencia'){document.getElementById('modal-incidencia-title').textContent='⚠️ Nueva Incidencia';['inc-desc','inc-km','inc-obs'].forEach(f=>document.getElementById(f).value='');document.getElementById('inc-fecha').value=new Date().toISOString().split('T')[0];document.getElementById('inc-gravedad').value='Media';document.getElementById('inc-estado').value='Pendiente';}
   if(id==='modal-mantenimiento'){document.getElementById('modal-mant-title').textContent='🔧 Nuevo Mantenimiento';['mant-desc','mant-km','mant-km-prox','mant-coste','mant-taller'].forEach(f=>document.getElementById(f).value='');document.getElementById('mant-fecha').value=new Date().toISOString().split('T')[0];document.getElementById('mant-estado').value='Programado';}
+  if(id==='modal-limpieza'){
+    document.getElementById('modal-limp-title').textContent='🧼 Nuevo Registro de Limpieza';
+    ['limp-km','limp-obs'].forEach(f=>document.getElementById(f).value='');
+    document.getElementById('limp-fecha').value=new Date().toISOString().split('T')[0];
+    document.getElementById('limp-tipo').value='Completa';
+    ['aspirar','asientos','cristales','salpic','papel','carroc','llantas','desinf'].forEach(k=>document.getElementById('limp-c-'+k).checked=false);
+    formPhotos.limp=[];renderPhotoPreviews('limp');
+  }
+  if(id==='modal-niveles'){
+    document.getElementById('modal-niv-title').textContent='💧 Nuevo Registro de Niveles';
+    ['niv-km','niv-obs'].forEach(f=>document.getElementById(f).value='');
+    document.getElementById('niv-fecha').value=new Date().toISOString().split('T')[0];
+    NIV_KEYS.forEach(x=>{const el=document.getElementById(`niv-${x.k}-ok`);if(el)el.checked=true;});
+    formPhotos.niv=[];renderPhotoPreviews('niv');
+  }
+  if(id==='modal-documentos'){
+    document.getElementById('modal-doc-title').textContent='📄 Nueva Revisión de Documentación';
+    document.getElementById('doc-obs').value='';
+    document.getElementById('doc-fecha').value=new Date().toISOString().split('T')[0];
+    document.getElementById('doc-itv-fecha').value='';
+    document.getElementById('doc-seg-fecha').value='';
+    DOC_KEYS.forEach(x=>{const el=document.getElementById(`doc-${x.k}-ok`);if(el)el.checked=true;});
+    formPhotos.doc=[];renderPhotoPreviews('doc');
+  }
   populateVehiculoSelects();
   openModal(id);
 }
@@ -1091,7 +1300,7 @@ function openModal(id){
   if(id==='modal-usuario'&&!document.getElementById('usuario-edit-id').value){document.getElementById('modal-usuario-title').textContent='Nuevo Usuario';['u-nombre','u-apellidos','u-dir','u-tel','u-obs'].forEach(f=>document.getElementById(f).value='');document.getElementById('u-hora').value='08:00';['obs-silla','obs-andador','obs-oxigeno','obs-ayuda'].forEach(f=>document.getElementById(f).checked=false);}
   updateGrupoSelects();document.getElementById(id).classList.add('open');
 }
-function closeModal(id){document.getElementById(id).classList.remove('open');const m={'modal-ruta':'ruta-edit-id','modal-grupo':'grupo-edit-id','modal-usuario':'usuario-edit-id','modal-repostaje':'rep-edit-id','modal-incidencia':'inc-edit-id','modal-mantenimiento':'mant-edit-id'};if(m[id])document.getElementById(m[id]).value='';}
+function closeModal(id){document.getElementById(id).classList.remove('open');const m={'modal-ruta':'ruta-edit-id','modal-grupo':'grupo-edit-id','modal-usuario':'usuario-edit-id','modal-repostaje':'rep-edit-id','modal-incidencia':'inc-edit-id','modal-mantenimiento':'mant-edit-id','modal-limpieza':'limp-edit-id','modal-niveles':'niv-edit-id','modal-documentos':'doc-edit-id'};if(m[id])document.getElementById(m[id]).value='';}
 function closeBg(e,id){if(e.target===document.getElementById(id))closeModal(id);}
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(window._tt);window._tt=setTimeout(()=>t.classList.remove('show'),2500);}
 
@@ -1117,13 +1326,90 @@ DB.mantenimientos=[
   {id:1,fecha:'2025-02-10',vehiculo:'1234-XYZ',tipo:'Cambio de aceite',desc:'Aceite 5W30 + filtro aceite',km:84000,kmProx:89000,coste:85.00,estado:'Completado',taller:'Taller Martínez'},
   {id:2,fecha:'2025-03-15',vehiculo:'5678-ABC',tipo:'Revisión ITV',desc:'ITV obligatoria anual',km:62500,kmProx:null,coste:45.00,estado:'Programado',taller:'ITV Girona'},
 ];
+DB.limpiezas=[];
+DB.niveles=[];
+DB.documentos=[];
 DB.nextId.repostajes=4; DB.nextId.incidencias=3; DB.nextId.mantenimientos=3;
+DB.nextId.limpiezas=1; DB.nextId.niveles=1; DB.nextId.documentos=1;
 let vehTab='gasoil';
+// Photos in forms: { limp: [dataUrl,...], niv:[...], doc:[...] }
+let formPhotos={limp:[],niv:[],doc:[]};
+
+// ══ FRECUENCIAS / COMPLIANCE ══
+// Limpieza: diaria
+// Niveles:  semanal (preferentemente lunes)
+// Documentos: mensual
+function parseFecha(s){if(!s)return null;const[y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d);}
+function daysBetween(d1,d2){return Math.floor((d2-d1)/86400000);}
+function lastDateFor(arr,vehId){
+  const recs=arr.filter(r=>r.vehiculo===vehId).sort((a,b)=>b.fecha.localeCompare(a.fecha));
+  return recs.length?parseFecha(recs[0].fecha):null;
+}
+function complianceForVehicle(vehId){
+  const hoy=new Date();hoy.setHours(0,0,0,0);
+  const isMonday=hoy.getDay()===1;
+  function compute(lastDate,limitOk,limitWarn){
+    if(!lastDate)return{status:'never',daysAgo:null};
+    const d=daysBetween(lastDate,hoy);
+    let status='overdue';
+    if(d<=limitOk)status='ok';
+    else if(d<=limitWarn)status='warn';
+    return{status,daysAgo:d};
+  }
+  const lLimp=lastDateFor(DB.limpiezas,vehId);
+  const lNiv=lastDateFor(DB.niveles,vehId);
+  const lDoc=lastDateFor(DB.documentos,vehId);
+  const limpieza={...compute(lLimp,0,1),lastDate:lLimp};
+  const niveles={...compute(lNiv,6,8),lastDate:lNiv};
+  const documentos={...compute(lDoc,30,35),lastDate:lDoc};
+  // Recordatorio especial: lunes y sin niveles esta semana
+  if(isMonday && (!lNiv || daysBetween(lNiv,hoy)>=1)){
+    niveles.mondayReminder=true;
+    if(niveles.status==='ok')niveles.status='warn';
+  }
+  return{limpieza,niveles,documentos};
+}
+function complianceGlobal(){
+  // Estado agregado para toda la flota
+  const bySt={ok:0,warn:0,overdue:0,never:0};
+  const res={limpieza:{...bySt},niveles:{...bySt},documentos:{...bySt}};
+  FLOTA.forEach(v=>{
+    const c=complianceForVehicle(v.id);
+    res.limpieza[c.limpieza.status]++;
+    res.niveles[c.niveles.status]++;
+    res.documentos[c.documentos.status]++;
+  });
+  return res;
+}
+function complianceBadge(st,daysAgo,ctx){
+  const map={
+    ok:{cls:'ok',lbl:'✓ Al día'},
+    warn:{cls:'bajo',lbl:'⚠ Atención'},
+    overdue:{cls:'cad',lbl:'✗ Vencido'},
+    never:{cls:'ren',lbl:'○ Sin registro'},
+  };
+  const m=map[st]||map.never;
+  const sub=daysAgo!=null?` · hace ${daysAgo}d`:'';
+  return`<span class="check-pill ${m.cls}" title="${ctx||''}">${m.lbl}${st==='overdue'?sub:''}</span>`;
+}
 
 function renderVehiculo(){
   const totalGasoil=DB.repostajes.reduce((s,r)=>s+r.importe,0);
   const totalMant=DB.mantenimientos.reduce((s,m)=>s+(m.coste||0),0);
   const incPend=DB.incidencias.filter(i=>i.estado!=='Resuelto').length;
+
+  // Compliance checks por vehículo
+  const compRows=FLOTA.map(v=>{
+    const c=complianceForVehicle(v.id);
+    const anyBad=['warn','overdue','never'].some(s=>[c.limpieza.status,c.niveles.status,c.documentos.status].includes(s));
+    return{veh:v,c,anyBad};
+  });
+  const hasAnyPending=compRows.some(r=>r.anyBad);
+  const globalCount={
+    limp:compRows.filter(r=>r.c.limpieza.status!=='ok').length,
+    niv:compRows.filter(r=>r.c.niveles.status!=='ok').length,
+    doc:compRows.filter(r=>r.c.documentos.status!=='ok').length,
+  };
 
   document.getElementById('vehiculo-content').innerHTML=`
   <div class="sec-head"><div><div class="sec-title">Vehículo</div><div class="sec-sub">Flota Group Lobu</div></div></div>
@@ -1134,10 +1420,37 @@ function renderVehiculo(){
     <div class="veh-kpi"><div class="veh-kpi-n" style="color:var(--green)">${totalMant.toFixed(0)}€</div><div class="veh-kpi-l">Mant. total</div></div>
   </div>
 
-  <div class="veh-tabs">
+  ${hasAnyPending?`<div class="card" style="margin-bottom:12px;border-left:4px solid var(--warn)">
+    <div style="font-weight:700;font-size:14px;margin-bottom:10px">📋 Controles pendientes</div>
+    <div style="font-size:11px;color:var(--muted);margin-bottom:10px">Limpieza <strong>diaria</strong> · Niveles <strong>semanal (lun)</strong> · Documentos <strong>mensual</strong></div>
+    ${compRows.map(({veh,c})=>`
+      <div style="padding:8px 0;border-top:1px solid var(--border)">
+        <div style="font-weight:700;font-size:13px;margin-bottom:6px">${veh.nombre}</div>
+        <div style="display:flex;flex-direction:column;gap:4px">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:6px">
+            <span style="font-size:12px">🧼 Limpieza</span>${complianceBadge(c.limpieza.status,c.limpieza.daysAgo)}
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:6px">
+            <span style="font-size:12px">💧 Niveles${c.niveles.mondayReminder?' <em style=\"color:var(--warn);font-size:10px\">(lunes)</em>':''}</span>${complianceBadge(c.niveles.status,c.niveles.daysAgo)}
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:6px">
+            <span style="font-size:12px">📄 Documentos</span>${complianceBadge(c.documentos.status,c.documentos.daysAgo)}
+          </div>
+        </div>
+      </div>
+    `).join('')}
+  </div>`:`<div class="card" style="margin-bottom:12px;border-left:4px solid var(--green)">
+    <div style="font-weight:700;font-size:14px;color:var(--green)">✅ Todos los controles al día</div>
+    <div style="font-size:11px;color:var(--muted);margin-top:4px">Limpieza diaria · Niveles semanal · Documentos mensual</div>
+  </div>`}
+
+  <div class="veh-tabs" style="flex-wrap:wrap">
     <div class="veh-tab ${vehTab==='gasoil'?'active':''}" onclick="switchVehTab('gasoil')">⛽ Gasoil</div>
     <div class="veh-tab ${vehTab==='incidencias'?'active':''}" onclick="switchVehTab('incidencias')">⚠️ Incidencias</div>
-    <div class="veh-tab ${vehTab==='mantenimiento'?'active':''}" onclick="switchVehTab('mantenimiento')">🔧 Mantenimiento</div>
+    <div class="veh-tab ${vehTab==='mantenimiento'?'active':''}" onclick="switchVehTab('mantenimiento')">🔧 Mantenim.</div>
+    <div class="veh-tab ${vehTab==='limpieza'?'active':''}" onclick="switchVehTab('limpieza')">🧼 Limpieza${globalCount.limp?` <span class="check-pill bajo" style="padding:1px 5px;font-size:9px">${globalCount.limp}</span>`:''}</div>
+    <div class="veh-tab ${vehTab==='niveles'?'active':''}" onclick="switchVehTab('niveles')">💧 Niveles${globalCount.niv?` <span class="check-pill bajo" style="padding:1px 5px;font-size:9px">${globalCount.niv}</span>`:''}</div>
+    <div class="veh-tab ${vehTab==='documentos'?'active':''}" onclick="switchVehTab('documentos')">📄 Docum.${globalCount.doc?` <span class="check-pill bajo" style="padding:1px 5px;font-size:9px">${globalCount.doc}</span>`:''}</div>
   </div>
 
   <div class="veh-panel ${vehTab==='gasoil'?'active':''}">
@@ -1159,7 +1472,88 @@ function renderVehiculo(){
       <button class="btn-add" style="background:var(--green)" onclick="openModalNew('modal-mantenimiento')">+ Mantenimiento</button>
     </div>
     ${renderMantenimientos()}
+  </div>
+
+  <div class="veh-panel ${vehTab==='limpieza'?'active':''}">
+    <div style="display:flex;justify-content:flex-end;margin-bottom:10px">
+      <button class="btn-add" style="background:var(--blue)" onclick="openModalNew('modal-limpieza')">+ Limpieza</button>
+    </div>
+    ${renderLimpiezas()}
+  </div>
+
+  <div class="veh-panel ${vehTab==='niveles'?'active':''}">
+    <div style="display:flex;justify-content:flex-end;margin-bottom:10px">
+      <button class="btn-add" style="background:var(--blue)" onclick="openModalNew('modal-niveles')">+ Niveles</button>
+    </div>
+    ${renderNivelesList()}
+  </div>
+
+  <div class="veh-panel ${vehTab==='documentos'?'active':''}">
+    <div style="display:flex;justify-content:flex-end;margin-bottom:10px">
+      <button class="btn-add" style="background:var(--purple)" onclick="openModalNew('modal-documentos')">+ Revisión docs</button>
+    </div>
+    ${renderDocumentos()}
   </div>`;
+}
+
+// ══ HELPERS FOTOS ══
+function resizeImage(file, maxW=1024, quality=0.7){
+  return new Promise((resolve, reject)=>{
+    const reader=new FileReader();
+    reader.onload=e=>{
+      const img=new Image();
+      img.onload=()=>{
+        const scale=Math.min(1, maxW/img.width);
+        const w=Math.round(img.width*scale), h=Math.round(img.height*scale);
+        const canvas=document.createElement('canvas');
+        canvas.width=w; canvas.height=h;
+        canvas.getContext('2d').drawImage(img,0,0,w,h);
+        resolve(canvas.toDataURL('image/jpeg',quality));
+      };
+      img.onerror=reject;
+      img.src=e.target.result;
+    };
+    reader.onerror=reject;
+    reader.readAsDataURL(file);
+  });
+}
+async function handlePhotoInput(e, key){
+  const files=Array.from(e.target.files||[]);
+  if(!formPhotos[key])formPhotos[key]=[];
+  for(const f of files){
+    try{
+      const dataUrl=await resizeImage(f);
+      formPhotos[key].push(dataUrl);
+    }catch(err){showToast('⚠️ Error al procesar imagen');}
+  }
+  e.target.value='';
+  renderPhotoPreviews(key);
+}
+function renderPhotoPreviews(key){
+  const el=document.getElementById('photos-'+key);
+  if(!el)return;
+  const photos=formPhotos[key]||[];
+  el.innerHTML=photos.length
+    ? photos.map((p,i)=>`<div class="photo-thumb"><img src="${p}" onclick="openLightbox('${key}',${i})"><button type="button" class="photo-del" onclick="removePhoto('${key}',${i})">×</button></div>`).join('')
+    : '<div class="photo-empty">Sin fotos</div>';
+}
+function removePhoto(key,idx){
+  if(!formPhotos[key])return;
+  formPhotos[key].splice(idx,1);
+  renderPhotoPreviews(key);
+}
+function openLightbox(key,idx){
+  let src;
+  if(typeof key==='string'&&typeof idx==='number'&&formPhotos[key])src=formPhotos[key][idx];
+  else src=key;
+  if(!src)return;
+  document.getElementById('lightbox-img').src=src;
+  document.getElementById('lightbox').classList.add('open');
+}
+function closeLightbox(){document.getElementById('lightbox').classList.remove('open');}
+function renderPhotosDetail(photos){
+  if(!photos||!photos.length)return'';
+  return`<div class="photo-grid" style="margin-top:8px">${photos.map(p=>`<div class="photo-thumb"><img src="${p}" onclick="openLightbox(this.src)"></div>`).join('')}</div>`;
 }
 
 function switchVehTab(t){vehTab=t;renderVehiculo();}
@@ -1270,10 +1664,287 @@ function renderMantenimientos(){
   }).join('');
 }
 
+// ══ LIMPIEZAS ══
+function limpiezaPctChecks(l){
+  const keys=['aspirar','asientos','cristales','salpic','papel','carroc','llantas','desinf'];
+  const checked=keys.filter(k=>l.checks&&l.checks[k]).length;
+  return Math.round((checked/keys.length)*100);
+}
+function renderLimpiezas(){
+  if(!DB.limpiezas.length)return`<div class="empty"><div class="empty-icon">🧼</div><div class="empty-text">Sin registros de limpieza</div></div>`;
+  const sorted=[...DB.limpiezas].sort((a,b)=>b.fecha.localeCompare(a.fecha));
+  return sorted.map(l=>{
+    const isOpen=openCards['limp'+l.id];
+    const pct=limpiezaPctChecks(l);
+    const pctColor=pct>=75?'var(--green)':pct>=50?'var(--warn)':'var(--red)';
+    const labels={aspirar:'Aspirado',asientos:'Asientos',cristales:'Cristales',salpic:'Salpicadero',papel:'Papeleras',carroc:'Carrocería',llantas:'Llantas',desinf:'Desinfectado'};
+    return`<div class="veh-item" style="border-left:4px solid ${pctColor}">
+      <div class="veh-item-head" onclick="toggleCard('limp${l.id}')">
+        <div class="veh-icon" style="background:var(--blue-bg)">🧼</div>
+        <div class="veh-item-info">
+          <div class="veh-item-title">${l.tipo} · ${l.vehiculo}</div>
+          <div class="veh-item-sub">${fmtFecha(l.fecha)} · ${l.conductor||'—'}</div>
+          <div style="margin-top:4px;display:flex;gap:5px;flex-wrap:wrap">
+            <span class="badge" style="background:${pctColor}22;color:${pctColor};border:1px solid ${pctColor}44">${pct}% checks</span>
+            ${l.fotos&&l.fotos.length?`<span class="badge badge-purple">📷 ${l.fotos.length}</span>`:''}
+          </div>
+        </div>
+        <span class="chevron ${isOpen?'open':''}">▾</span>
+      </div>
+      <div class="veh-item-expand ${isOpen?'open':''}">
+        <div class="veh-detail-row"><span class="veh-detail-label">Tipo</span><span class="veh-detail-val">${l.tipo}</span></div>
+        <div class="veh-detail-row"><span class="veh-detail-label">Vehículo</span><span class="veh-detail-val">${l.vehiculo}</span></div>
+        ${l.km?`<div class="veh-detail-row"><span class="veh-detail-label">Km</span><span class="veh-detail-val" style="font-family:'DM Mono',monospace">${l.km.toLocaleString()} km</span></div>`:''}
+        <div class="veh-detail-row"><span class="veh-detail-label">Conductor</span><span class="veh-detail-val">${l.conductor||'—'}</span></div>
+        <div style="margin-top:8px;padding:8px 10px;background:var(--cream);border-radius:8px">
+          <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;margin-bottom:6px">Checklist</div>
+          ${Object.entries(labels).map(([k,v])=>`<div style="display:flex;justify-content:space-between;font-size:12px;padding:3px 0"><span>${v}</span><span style="color:${l.checks&&l.checks[k]?'var(--green)':'var(--muted)'}">${l.checks&&l.checks[k]?'✓':'—'}</span></div>`).join('')}
+        </div>
+        ${l.obs?`<div class="veh-detail-row" style="margin-top:8px"><span class="veh-detail-label">Notas</span><span class="veh-detail-val">${l.obs}</span></div>`:''}
+        ${renderPhotosDetail(l.fotos)}
+        <div class="ruta-actions" style="margin-top:10px">
+          <button class="btn-action primary" onclick="editLimpieza(${l.id})">✏️ Editar</button>
+          <button class="btn-action danger" onclick="deleteLimpieza(${l.id})">🗑️ Eliminar</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+function editLimpieza(id){
+  const l=DB.limpiezas.find(x=>x.id===id);
+  document.getElementById('modal-limp-title').textContent='✏️ Editar Limpieza';
+  document.getElementById('limp-edit-id').value=id;
+  document.getElementById('limp-fecha').value=l.fecha;
+  document.getElementById('limp-vehiculo').value=l.vehiculo;
+  document.getElementById('limp-tipo').value=l.tipo;
+  document.getElementById('limp-km').value=l.km||'';
+  document.getElementById('limp-obs').value=l.obs||'';
+  ['aspirar','asientos','cristales','salpic','papel','carroc','llantas','desinf'].forEach(k=>{
+    document.getElementById('limp-c-'+k).checked=!!(l.checks&&l.checks[k]);
+  });
+  formPhotos.limp=[...(l.fotos||[])];
+  renderPhotoPreviews('limp');
+  openModal('modal-limpieza');
+}
+function deleteLimpieza(id){if(!confirm('¿Eliminar registro de limpieza?'))return;DB.limpiezas=DB.limpiezas.filter(x=>x.id!==id);showToast('🗑️ Limpieza eliminada');renderVehiculo();}
+function guardarLimpieza(){
+  const vehiculo=document.getElementById('limp-vehiculo').value;
+  if(!vehiculo){showToast('⚠️ Selecciona un vehículo');return;}
+  const editId=parseInt(document.getElementById('limp-edit-id').value||0);
+  const checks={};
+  ['aspirar','asientos','cristales','salpic','papel','carroc','llantas','desinf'].forEach(k=>{
+    checks[k]=document.getElementById('limp-c-'+k).checked;
+  });
+  const data={
+    fecha:document.getElementById('limp-fecha').value||new Date().toISOString().split('T')[0],
+    vehiculo,
+    tipo:document.getElementById('limp-tipo').value,
+    km:parseInt(document.getElementById('limp-km').value)||0,
+    checks,
+    obs:document.getElementById('limp-obs').value.trim(),
+    fotos:[...(formPhotos.limp||[])],
+    conductor:currentUser?currentUser.user:'',
+  };
+  if(editId){const i=DB.limpiezas.findIndex(x=>x.id===editId);DB.limpiezas[i]={...DB.limpiezas[i],...data};showToast('✅ Limpieza actualizada');}
+  else{data.id=DB.nextId.limpiezas++;DB.limpiezas.push(data);showToast('✅ Limpieza registrada');}
+  formPhotos.limp=[];
+  closeModal('modal-limpieza');renderVehiculo();
+}
+
+// ══ NIVELES DE LÍQUIDOS ══
+const NIV_KEYS=[
+  {k:'aceite',label:'Aceite motor'},
+  {k:'refri',label:'Refrigerante'},
+  {k:'frenos',label:'Líq. frenos'},
+  {k:'adblue',label:'AdBlue'},
+  {k:'limp',label:'Limpiapara.'},
+  {k:'direc',label:'Direc. asistida'},
+];
+function nivelesAlerta(n){
+  return NIV_KEYS.some(x=>n.niveles&&n.niveles[x.k]==='Bajo');
+}
+function renderNivelesList(){
+  if(!DB.niveles.length)return`<div class="empty"><div class="empty-icon">💧</div><div class="empty-text">Sin registros de niveles</div></div>`;
+  const sorted=[...DB.niveles].sort((a,b)=>b.fecha.localeCompare(a.fecha));
+  return sorted.map(n=>{
+    const isOpen=openCards['niv'+n.id];
+    const alerta=nivelesAlerta(n);
+    return`<div class="veh-item" style="border-left:4px solid ${alerta?'var(--red)':'var(--green)'}">
+      <div class="veh-item-head" onclick="toggleCard('niv${n.id}')">
+        <div class="veh-icon" style="background:var(--blue-bg)">💧</div>
+        <div class="veh-item-info">
+          <div class="veh-item-title">Niveles · ${n.vehiculo}</div>
+          <div class="veh-item-sub">${fmtFecha(n.fecha)} · ${n.conductor||'—'}</div>
+          <div style="margin-top:4px;display:flex;gap:3px;flex-wrap:wrap">
+            ${alerta?'<span class="check-pill bajo">⚠ Nivel bajo</span>':'<span class="check-pill ok">✓ Todo OK</span>'}
+            ${n.fotos&&n.fotos.length?`<span class="badge badge-purple">📷 ${n.fotos.length}</span>`:''}
+          </div>
+        </div>
+        <span class="chevron ${isOpen?'open':''}">▾</span>
+      </div>
+      <div class="veh-item-expand ${isOpen?'open':''}">
+        <div class="veh-detail-row"><span class="veh-detail-label">Vehículo</span><span class="veh-detail-val">${n.vehiculo}</span></div>
+        ${n.km?`<div class="veh-detail-row"><span class="veh-detail-label">Km</span><span class="veh-detail-val" style="font-family:'DM Mono',monospace">${n.km.toLocaleString()} km</span></div>`:''}
+        <div class="veh-detail-row"><span class="veh-detail-label">Conductor</span><span class="veh-detail-val">${n.conductor||'—'}</span></div>
+        <div style="margin-top:8px;padding:8px 10px;background:var(--cream);border-radius:8px">
+          <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;margin-bottom:6px">Niveles</div>
+          ${NIV_KEYS.map(x=>{const v=(n.niveles&&n.niveles[x.k])||'OK';const cls=v==='OK'?'ok':v==='Bajo'?'bajo':'rell';return`<div style="display:flex;justify-content:space-between;align-items:center;font-size:12px;padding:4px 0"><span>${x.label}</span><span class="check-pill ${cls}">${v}</span></div>`;}).join('')}
+        </div>
+        ${n.obs?`<div class="veh-detail-row" style="margin-top:8px"><span class="veh-detail-label">Notas</span><span class="veh-detail-val">${n.obs}</span></div>`:''}
+        ${renderPhotosDetail(n.fotos)}
+        <div class="ruta-actions" style="margin-top:10px">
+          <button class="btn-action primary" onclick="editNiveles(${n.id})">✏️ Editar</button>
+          <button class="btn-action danger" onclick="deleteNiveles(${n.id})">🗑️ Eliminar</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+function editNiveles(id){
+  const n=DB.niveles.find(x=>x.id===id);
+  document.getElementById('modal-niv-title').textContent='✏️ Editar Niveles';
+  document.getElementById('niv-edit-id').value=id;
+  document.getElementById('niv-fecha').value=n.fecha;
+  document.getElementById('niv-vehiculo').value=n.vehiculo;
+  document.getElementById('niv-km').value=n.km||'';
+  document.getElementById('niv-obs').value=n.obs||'';
+  NIV_KEYS.forEach(x=>{
+    const v=(n.niveles&&n.niveles[x.k])||'OK';
+    const valMap={OK:'ok',Bajo:'bajo',Rellenado:'rell'};
+    const id=`niv-${x.k}-${valMap[v]}`;
+    const el=document.getElementById(id);if(el)el.checked=true;
+  });
+  formPhotos.niv=[...(n.fotos||[])];
+  renderPhotoPreviews('niv');
+  openModal('modal-niveles');
+}
+function deleteNiveles(id){if(!confirm('¿Eliminar registro de niveles?'))return;DB.niveles=DB.niveles.filter(x=>x.id!==id);showToast('🗑️ Niveles eliminados');renderVehiculo();}
+function guardarNiveles(){
+  const vehiculo=document.getElementById('niv-vehiculo').value;
+  if(!vehiculo){showToast('⚠️ Selecciona un vehículo');return;}
+  const editId=parseInt(document.getElementById('niv-edit-id').value||0);
+  const niveles={};
+  NIV_KEYS.forEach(x=>{
+    const sel=document.querySelector(`input[name="niv-${x.k}"]:checked`);
+    niveles[x.k]=sel?sel.value:'OK';
+  });
+  const data={
+    fecha:document.getElementById('niv-fecha').value||new Date().toISOString().split('T')[0],
+    vehiculo,
+    km:parseInt(document.getElementById('niv-km').value)||0,
+    niveles,
+    obs:document.getElementById('niv-obs').value.trim(),
+    fotos:[...(formPhotos.niv||[])],
+    conductor:currentUser?currentUser.user:'',
+  };
+  if(editId){const i=DB.niveles.findIndex(x=>x.id===editId);DB.niveles[i]={...DB.niveles[i],...data};showToast('✅ Niveles actualizados');}
+  else{data.id=DB.nextId.niveles++;DB.niveles.push(data);showToast('✅ Niveles registrados');}
+  formPhotos.niv=[];
+  closeModal('modal-niveles');renderVehiculo();
+}
+
+// ══ DOCUMENTACIÓN ══
+const DOC_KEYS=[
+  {k:'itv',label:'ITV',hasFecha:true},
+  {k:'seg',label:'Seguro',hasFecha:true},
+  {k:'perm',label:'Permiso circ.',hasFecha:false},
+  {k:'tt',label:'Tarj. transporte',hasFecha:false},
+  {k:'taco',label:'Tacógrafo',hasFecha:false},
+  {k:'ext',label:'Extintor',hasFecha:false},
+  {k:'bot',label:'Botiquín',hasFecha:false},
+];
+function docEstadoGlobal(d){
+  const vals=DOC_KEYS.map(x=>(d.estados&&d.estados[x.k])||'OK');
+  if(vals.includes('Caducado'))return'Caducado';
+  if(vals.includes('Renovar'))return'Renovar';
+  return'OK';
+}
+function renderDocumentos(){
+  if(!DB.documentos.length)return`<div class="empty"><div class="empty-icon">📄</div><div class="empty-text">Sin revisiones de documentación</div></div>`;
+  const sorted=[...DB.documentos].sort((a,b)=>b.fecha.localeCompare(a.fecha));
+  return sorted.map(d=>{
+    const isOpen=openCards['doc'+d.id];
+    const global=docEstadoGlobal(d);
+    const colorByStatus={OK:'var(--green)',Renovar:'var(--warn)',Caducado:'var(--red)'};
+    return`<div class="veh-item" style="border-left:4px solid ${colorByStatus[global]}">
+      <div class="veh-item-head" onclick="toggleCard('doc${d.id}')">
+        <div class="veh-icon" style="background:var(--purple-bg)">📄</div>
+        <div class="veh-item-info">
+          <div class="veh-item-title">Documentación · ${d.vehiculo}</div>
+          <div class="veh-item-sub">${fmtFecha(d.fecha)} · ${d.conductor||'—'}</div>
+          <div style="margin-top:4px;display:flex;gap:3px;flex-wrap:wrap">
+            <span class="check-pill ${global==='OK'?'ok':global==='Renovar'?'ren':'cad'}">${global}</span>
+            ${d.fotos&&d.fotos.length?`<span class="badge badge-purple">📷 ${d.fotos.length}</span>`:''}
+          </div>
+        </div>
+        <span class="chevron ${isOpen?'open':''}">▾</span>
+      </div>
+      <div class="veh-item-expand ${isOpen?'open':''}">
+        <div class="veh-detail-row"><span class="veh-detail-label">Vehículo</span><span class="veh-detail-val">${d.vehiculo}</span></div>
+        <div class="veh-detail-row"><span class="veh-detail-label">Revisión</span><span class="veh-detail-val">${fmtFecha(d.fecha)}</span></div>
+        <div class="veh-detail-row"><span class="veh-detail-label">Conductor</span><span class="veh-detail-val">${d.conductor||'—'}</span></div>
+        <div style="margin-top:8px;padding:8px 10px;background:var(--cream);border-radius:8px">
+          <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;margin-bottom:6px">Documentos</div>
+          ${DOC_KEYS.map(x=>{const v=(d.estados&&d.estados[x.k])||'OK';const cls=v==='OK'?'ok':v==='Renovar'?'ren':'cad';const fechaCad=x.hasFecha&&d.fechas&&d.fechas[x.k]?` · hasta ${fmtFechaCorta(d.fechas[x.k])}`:'';return`<div style="display:flex;justify-content:space-between;align-items:center;font-size:12px;padding:4px 0"><span>${x.label}${fechaCad}</span><span class="check-pill ${cls}">${v}</span></div>`;}).join('')}
+        </div>
+        ${d.obs?`<div class="veh-detail-row" style="margin-top:8px"><span class="veh-detail-label">Notas</span><span class="veh-detail-val">${d.obs}</span></div>`:''}
+        ${renderPhotosDetail(d.fotos)}
+        <div class="ruta-actions" style="margin-top:10px">
+          <button class="btn-action primary" onclick="editDocumentos(${d.id})">✏️ Editar</button>
+          <button class="btn-action danger" onclick="deleteDocumentos(${d.id})">🗑️ Eliminar</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+function editDocumentos(id){
+  const d=DB.documentos.find(x=>x.id===id);
+  document.getElementById('modal-doc-title').textContent='✏️ Editar Documentación';
+  document.getElementById('doc-edit-id').value=id;
+  document.getElementById('doc-fecha').value=d.fecha;
+  document.getElementById('doc-vehiculo').value=d.vehiculo;
+  document.getElementById('doc-obs').value=d.obs||'';
+  DOC_KEYS.forEach(x=>{
+    const v=(d.estados&&d.estados[x.k])||'OK';
+    const valMap={OK:'ok',Renovar:'ren',Caducado:'cad'};
+    const el=document.getElementById(`doc-${x.k}-${valMap[v]}`);if(el)el.checked=true;
+  });
+  document.getElementById('doc-itv-fecha').value=(d.fechas&&d.fechas.itv)||'';
+  document.getElementById('doc-seg-fecha').value=(d.fechas&&d.fechas.seg)||'';
+  formPhotos.doc=[...(d.fotos||[])];
+  renderPhotoPreviews('doc');
+  openModal('modal-documentos');
+}
+function deleteDocumentos(id){if(!confirm('¿Eliminar revisión de documentación?'))return;DB.documentos=DB.documentos.filter(x=>x.id!==id);showToast('🗑️ Revisión eliminada');renderVehiculo();}
+function guardarDocumentos(){
+  const vehiculo=document.getElementById('doc-vehiculo').value;
+  if(!vehiculo){showToast('⚠️ Selecciona un vehículo');return;}
+  const editId=parseInt(document.getElementById('doc-edit-id').value||0);
+  const estados={},fechas={};
+  DOC_KEYS.forEach(x=>{
+    const sel=document.querySelector(`input[name="doc-${x.k}"]:checked`);
+    estados[x.k]=sel?sel.value:'OK';
+  });
+  fechas.itv=document.getElementById('doc-itv-fecha').value||'';
+  fechas.seg=document.getElementById('doc-seg-fecha').value||'';
+  const data={
+    fecha:document.getElementById('doc-fecha').value||new Date().toISOString().split('T')[0],
+    vehiculo,
+    estados, fechas,
+    obs:document.getElementById('doc-obs').value.trim(),
+    fotos:[...(formPhotos.doc||[])],
+    conductor:currentUser?currentUser.user:'',
+  };
+  if(editId){const i=DB.documentos.findIndex(x=>x.id===editId);DB.documentos[i]={...DB.documentos[i],...data};showToast('✅ Documentación actualizada');}
+  else{data.id=DB.nextId.documentos++;DB.documentos.push(data);showToast('✅ Revisión registrada');}
+  formPhotos.doc=[];
+  closeModal('modal-documentos');renderVehiculo();
+}
+
 // CRUD Repostaje
 function populateVehiculoSelects(){
   const opts=FLOTA.map(v=>`<option value="${v.id}">${v.nombre}</option>`).join('');
-  ['rep-vehiculo','inc-vehiculo','mant-vehiculo'].forEach(id=>{
+  ['rep-vehiculo','inc-vehiculo','mant-vehiculo','limp-vehiculo','niv-vehiculo','doc-vehiculo'].forEach(id=>{
     const el=document.getElementById(id);if(el)el.innerHTML=`<option value="">-- Selecciona --</option>${opts}`;
   });
 }
@@ -1581,11 +2252,14 @@ function renderInformes(){
   <div class="sec-head"><div><div class="sec-title">Informes</div><div class="sec-sub">Resultados y exportación</div></div></div>
   <div class="admin-badge">👑 ${currentUser.nombre} · Administrador</div>
 
-  <div class="inf-tabs">
+  <div class="inf-tabs" style="flex-wrap:wrap">
     <div class="inf-tab ${infTab==='gasoil'?'active':''}" onclick="setInfTab('gasoil')">⛽ Gasoil</div>
     <div class="inf-tab ${infTab==='rutas'?'active':''}" onclick="setInfTab('rutas')">🗺️ Rutas</div>
     <div class="inf-tab ${infTab==='incidencias'?'active':''}" onclick="setInfTab('incidencias')">⚠️ Incidencias</div>
     <div class="inf-tab ${infTab==='mantenimiento'?'active':''}" onclick="setInfTab('mantenimiento')">🔧 Mant.</div>
+    <div class="inf-tab ${infTab==='limpieza'?'active':''}" onclick="setInfTab('limpieza')">🧼 Limpieza</div>
+    <div class="inf-tab ${infTab==='niveles'?'active':''}" onclick="setInfTab('niveles')">💧 Niveles</div>
+    <div class="inf-tab ${infTab==='documentos'?'active':''}" onclick="setInfTab('documentos')">📄 Docum.</div>
   </div>
 
   <!-- FILTROS -->
@@ -1632,6 +2306,9 @@ function renderInfResultado(){
   else if(infTab==='rutas') el.innerHTML=infRutas();
   else if(infTab==='incidencias') el.innerHTML=infIncidencias();
   else if(infTab==='mantenimiento') el.innerHTML=infMantenimiento();
+  else if(infTab==='limpieza') el.innerHTML=infLimpieza();
+  else if(infTab==='niveles') el.innerHTML=infNiveles();
+  else if(infTab==='documentos') el.innerHTML=infDocumentos();
 }
 
 function infGasoil(){
@@ -1748,6 +2425,121 @@ function infMantenimiento(){
   <button class="inf-export-btn" onclick="exportCSV('mantenimiento')">📥 Exportar CSV</button>`:`<div class="empty"><div class="empty-icon">🔧</div><div class="empty-text">Sin mantenimientos para el período</div></div>`}`;
 }
 
+function infLimpieza(){
+  const data=applyFilters(DB.limpiezas,'fecha');
+  const totFotos=data.reduce((s,l)=>s+(l.fotos?l.fotos.length:0),0);
+  const avgPct=data.length?Math.round(data.reduce((s,l)=>s+limpiezaPctChecks(l),0)/data.length):0;
+  // Por vehículo
+  const porVeh={};data.forEach(l=>{if(!porVeh[l.vehiculo])porVeh[l.vehiculo]=0;porVeh[l.vehiculo]++;});
+  const maxVeh=Math.max(...Object.values(porVeh),1);
+  // Compliance (diaria)
+  const comp=FLOTA.map(v=>({v,c:complianceForVehicle(v.id).limpieza}));
+  return`
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px">
+    <div class="veh-kpi"><div class="veh-kpi-n" style="color:var(--blue)">${data.length}</div><div class="veh-kpi-l">Limpiezas</div></div>
+    <div class="veh-kpi"><div class="veh-kpi-n" style="color:var(--green)">${avgPct}%</div><div class="veh-kpi-l">Media checks</div></div>
+    <div class="veh-kpi"><div class="veh-kpi-n" style="color:var(--purple)">${totFotos}</div><div class="veh-kpi-l">Fotos</div></div>
+  </div>
+  <div class="card" style="margin-bottom:12px">
+    <div style="font-weight:700;font-size:14px;margin-bottom:6px">📋 Cumplimiento diario</div>
+    <div style="font-size:11px;color:var(--muted);margin-bottom:10px">Objetivo: 1 limpieza por día por vehículo</div>
+    ${comp.map(({v,c})=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-top:1px solid var(--border)"><span style="font-size:13px;font-weight:600">${v.nombre}</span>${complianceBadge(c.status,c.daysAgo)}</div>`).join('')}
+  </div>
+  ${Object.keys(porVeh).length?`<div class="card" style="margin-bottom:12px">
+    <div style="font-weight:700;font-size:14px;margin-bottom:10px">🚐 Limpiezas por vehículo</div>
+    ${Object.entries(porVeh).sort((a,b)=>b[1]-a[1]).map(([v,n])=>`
+    <div class="chart-bar-wrap">
+      <div class="chart-bar-label"><span style="font-weight:600">${v}</span><span style="font-weight:700;color:var(--blue)">${n}</span></div>
+      <div class="chart-bar-track"><div class="chart-bar-fill" style="width:${(n/maxVeh*100).toFixed(0)}%;background:linear-gradient(90deg,var(--blue),#5A9ABE)"></div></div>
+    </div>`).join('')}
+  </div>`:''}
+  ${data.length?`<div class="card" style="overflow-x:auto"><table class="inf-table">
+    <thead><tr><th>Fecha</th><th>Vehículo</th><th>Tipo</th><th>Checks</th><th>Fotos</th><th>Conductor</th></tr></thead>
+    <tbody>${data.sort((a,b)=>b.fecha.localeCompare(a.fecha)).map(l=>`<tr><td>${fmtFechaCorta(l.fecha)}</td><td style="font-size:11px">${l.vehiculo}</td><td style="font-size:12px">${l.tipo}</td><td style="font-family:'DM Mono',monospace;font-size:12px">${limpiezaPctChecks(l)}%</td><td style="text-align:center">${l.fotos?l.fotos.length:0}</td><td style="font-size:11px">@${l.conductor||'—'}</td></tr>`).join('')}</tbody>
+  </table></div>
+  <button class="inf-export-btn" onclick="exportCSV('limpieza')">📥 Exportar CSV</button>`:`<div class="empty"><div class="empty-icon">🧼</div><div class="empty-text">Sin limpiezas en el período</div></div>`}`;
+}
+
+function infNiveles(){
+  const data=applyFilters(DB.niveles,'fecha');
+  const alertas=data.filter(nivelesAlerta).length;
+  const totFotos=data.reduce((s,n)=>s+(n.fotos?n.fotos.length:0),0);
+  // Conteo de estados por nivel
+  const conteo={};NIV_KEYS.forEach(x=>{conteo[x.k]={OK:0,Bajo:0,Rellenado:0};});
+  data.forEach(n=>{NIV_KEYS.forEach(x=>{const v=(n.niveles&&n.niveles[x.k])||'OK';if(conteo[x.k][v]!==undefined)conteo[x.k][v]++;});});
+  // Compliance (semanal, lunes)
+  const comp=FLOTA.map(v=>({v,c:complianceForVehicle(v.id).niveles}));
+  return`
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px">
+    <div class="veh-kpi"><div class="veh-kpi-n" style="color:var(--blue)">${data.length}</div><div class="veh-kpi-l">Revisiones</div></div>
+    <div class="veh-kpi"><div class="veh-kpi-n" style="color:var(--red)">${alertas}</div><div class="veh-kpi-l">Con nivel bajo</div></div>
+    <div class="veh-kpi"><div class="veh-kpi-n" style="color:var(--purple)">${totFotos}</div><div class="veh-kpi-l">Fotos</div></div>
+  </div>
+  <div class="card" style="margin-bottom:12px">
+    <div style="font-weight:700;font-size:14px;margin-bottom:6px">📋 Cumplimiento semanal</div>
+    <div style="font-size:11px;color:var(--muted);margin-bottom:10px">Objetivo: 1 revisión por semana (preferentemente lunes)</div>
+    ${comp.map(({v,c})=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-top:1px solid var(--border)"><span style="font-size:13px;font-weight:600">${v.nombre}${c.mondayReminder?' <em style="color:var(--warn);font-size:10px">(lunes)</em>':''}</span>${complianceBadge(c.status,c.daysAgo)}</div>`).join('')}
+  </div>
+  ${data.length?`<div class="card" style="margin-bottom:12px">
+    <div style="font-weight:700;font-size:14px;margin-bottom:10px">💧 Estado por líquido</div>
+    ${NIV_KEYS.map(x=>{const c=conteo[x.k];const tot=c.OK+c.Bajo+c.Rellenado;if(!tot)return'';return`
+    <div style="padding:6px 0;border-bottom:1px solid var(--border)">
+      <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px"><span style="font-weight:600">${x.label}</span><span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted)">${tot} rev.</span></div>
+      <div style="display:flex;gap:4px;font-size:11px">
+        <span class="check-pill ok">OK ${c.OK}</span>
+        <span class="check-pill bajo">Bajo ${c.Bajo}</span>
+        <span class="check-pill rell">Rell. ${c.Rellenado}</span>
+      </div>
+    </div>`;}).join('')}
+  </div>
+  <div class="card" style="overflow-x:auto"><table class="inf-table">
+    <thead><tr><th>Fecha</th><th>Vehículo</th><th>Km</th><th>Alertas</th><th>Fotos</th><th>Conductor</th></tr></thead>
+    <tbody>${data.sort((a,b)=>b.fecha.localeCompare(a.fecha)).map(n=>{const bajos=NIV_KEYS.filter(x=>(n.niveles&&n.niveles[x.k])==='Bajo').length;return`<tr><td>${fmtFechaCorta(n.fecha)}</td><td style="font-size:11px">${n.vehiculo}</td><td style="font-family:'DM Mono',monospace;font-size:11px">${n.km?n.km.toLocaleString():'—'}</td><td style="text-align:center;${bajos?'color:var(--red);font-weight:700':''}">${bajos||'—'}</td><td style="text-align:center">${n.fotos?n.fotos.length:0}</td><td style="font-size:11px">@${n.conductor||'—'}</td></tr>`;}).join('')}</tbody>
+  </table></div>
+  <button class="inf-export-btn" onclick="exportCSV('niveles')">📥 Exportar CSV</button>`:`<div class="empty"><div class="empty-icon">💧</div><div class="empty-text">Sin revisiones de niveles en el período</div></div>`}`;
+}
+
+function infDocumentos(){
+  const data=applyFilters(DB.documentos,'fecha');
+  const caducados=data.filter(d=>docEstadoGlobal(d)==='Caducado').length;
+  const renovar=data.filter(d=>docEstadoGlobal(d)==='Renovar').length;
+  const totFotos=data.reduce((s,d)=>s+(d.fotos?d.fotos.length:0),0);
+  // Último estado por vehículo
+  const porVeh={};data.forEach(d=>{if(!porVeh[d.vehiculo]||porVeh[d.vehiculo].fecha<d.fecha)porVeh[d.vehiculo]=d;});
+  // Compliance (mensual)
+  const comp=FLOTA.map(v=>({v,c:complianceForVehicle(v.id).documentos}));
+  return`
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px">
+    <div class="veh-kpi"><div class="veh-kpi-n" style="color:var(--red)">${caducados}</div><div class="veh-kpi-l">Caducados</div></div>
+    <div class="veh-kpi"><div class="veh-kpi-n" style="color:var(--warn)">${renovar}</div><div class="veh-kpi-l">A renovar</div></div>
+    <div class="veh-kpi"><div class="veh-kpi-n" style="color:var(--purple)">${totFotos}</div><div class="veh-kpi-l">Fotos</div></div>
+  </div>
+  <div class="card" style="margin-bottom:12px">
+    <div style="font-weight:700;font-size:14px;margin-bottom:6px">📋 Cumplimiento mensual</div>
+    <div style="font-size:11px;color:var(--muted);margin-bottom:10px">Objetivo: 1 revisión de documentación al mes</div>
+    ${comp.map(({v,c})=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-top:1px solid var(--border)"><span style="font-size:13px;font-weight:600">${v.nombre}</span>${complianceBadge(c.status,c.daysAgo)}</div>`).join('')}
+  </div>
+  ${Object.keys(porVeh).length?`<div class="card" style="margin-bottom:12px">
+    <div style="font-weight:700;font-size:14px;margin-bottom:10px">🚐 Último estado por vehículo</div>
+    ${Object.entries(porVeh).map(([v,d])=>{const g=docEstadoGlobal(d);const cls=g==='OK'?'ok':g==='Renovar'?'ren':'cad';return`
+    <div style="padding:8px 0;border-bottom:1px solid var(--border)">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+        <span style="font-weight:600;font-size:13px">${v}</span>
+        <span class="check-pill ${cls}">${g}</span>
+      </div>
+      <div style="display:flex;gap:3px;flex-wrap:wrap">
+        ${DOC_KEYS.map(x=>{const v2=(d.estados&&d.estados[x.k])||'OK';const c=v2==='OK'?'ok':v2==='Renovar'?'ren':'cad';return`<span class="check-pill ${c}">${x.label}</span>`;}).join('')}
+      </div>
+      <div style="font-size:10px;color:var(--muted);margin-top:3px">Última revisión: ${fmtFechaCorta(d.fecha)}</div>
+    </div>`;}).join('')}
+  </div>`:''}
+  ${data.length?`<div class="card" style="overflow-x:auto"><table class="inf-table">
+    <thead><tr><th>Fecha</th><th>Vehículo</th><th>Estado</th><th>Fotos</th><th>Conductor</th></tr></thead>
+    <tbody>${data.sort((a,b)=>b.fecha.localeCompare(a.fecha)).map(d=>{const g=docEstadoGlobal(d);const color=g==='OK'?'var(--green)':g==='Renovar'?'var(--warn)':'var(--red)';return`<tr><td>${fmtFechaCorta(d.fecha)}</td><td style="font-size:11px">${d.vehiculo}</td><td style="color:${color};font-weight:700">${g}</td><td style="text-align:center">${d.fotos?d.fotos.length:0}</td><td style="font-size:11px">@${d.conductor||'—'}</td></tr>`;}).join('')}</tbody>
+  </table></div>
+  <button class="inf-export-btn" onclick="exportCSV('documentos')">📥 Exportar CSV</button>`:`<div class="empty"><div class="empty-icon">📄</div><div class="empty-text">Sin revisiones de documentación en el período</div></div>`}`;
+}
+
 function fmtFechaCorta(f){if(!f)return'—';const[y,m,d]=f.split('-');return`${d}/${m}/${y.slice(2)}`;}
 
 function exportCSV(tipo){
@@ -1769,6 +2561,18 @@ function exportCSV(tipo){
     filename='mantenimiento.csv';
     rows=[['Fecha','Vehículo','Tipo','Descripción','Km','Km próximo','Coste €','Estado','Taller']];
     applyFilters(DB.mantenimientos,'fecha').forEach(m=>rows.push([m.fecha,m.vehiculo,m.tipo,m.desc||'',m.km||'',m.kmProx||'',(m.coste||0).toFixed(2),m.estado,m.taller||'']));
+  } else if(tipo==='limpieza'){
+    filename='limpiezas.csv';
+    rows=[['Fecha','Vehículo','Tipo','Km','% Checks','Fotos','Conductor','Observaciones']];
+    applyFilters(DB.limpiezas,'fecha').forEach(l=>rows.push([l.fecha,l.vehiculo,l.tipo,l.km||'',limpiezaPctChecks(l)+'%',(l.fotos||[]).length,l.conductor||'',l.obs||'']));
+  } else if(tipo==='niveles'){
+    filename='niveles_liquidos.csv';
+    rows=[['Fecha','Vehículo','Km','Aceite','Refrigerante','Frenos','AdBlue','Limpiap.','Dir. asist.','Fotos','Conductor']];
+    applyFilters(DB.niveles,'fecha').forEach(n=>{const g=k=>(n.niveles&&n.niveles[k])||'OK';rows.push([n.fecha,n.vehiculo,n.km||'',g('aceite'),g('refri'),g('frenos'),g('adblue'),g('limp'),g('direc'),(n.fotos||[]).length,n.conductor||'']);});
+  } else if(tipo==='documentos'){
+    filename='documentacion.csv';
+    rows=[['Fecha','Vehículo','Estado global','ITV','Cad.ITV','Seguro','Cad.Seguro','Permiso','Tarjeta T.','Tacógrafo','Extintor','Botiquín','Fotos','Conductor']];
+    applyFilters(DB.documentos,'fecha').forEach(d=>{const e=k=>(d.estados&&d.estados[k])||'OK';const f=k=>(d.fechas&&d.fechas[k])||'';rows.push([d.fecha,d.vehiculo,docEstadoGlobal(d),e('itv'),f('itv'),e('seg'),f('seg'),e('perm'),e('tt'),e('taco'),e('ext'),e('bot'),(d.fotos||[]).length,d.conductor||'']);});
   }
   const csv=rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(sep)).join('\n');
   const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'});
@@ -1837,6 +2641,14 @@ const _guardarIncidencia=guardarIncidencia; window.guardarIncidencia=withSync(_g
 const _deleteIncidencia=deleteIncidencia;   window.deleteIncidencia=withSync(_deleteIncidencia);
 const _guardarMantenimiento=guardarMantenimiento; window.guardarMantenimiento=withSync(_guardarMantenimiento);
 const _deleteMantenimiento=deleteMantenimiento;   window.deleteMantenimiento=withSync(_deleteMantenimiento);
+
+// Limpieza / Niveles / Documentación
+const _guardarLimpieza=guardarLimpieza;   window.guardarLimpieza=withSync(_guardarLimpieza);
+const _deleteLimpieza=deleteLimpieza;     window.deleteLimpieza=withSync(_deleteLimpieza);
+const _guardarNiveles=guardarNiveles;     window.guardarNiveles=withSync(_guardarNiveles);
+const _deleteNiveles=deleteNiveles;       window.deleteNiveles=withSync(_deleteNiveles);
+const _guardarDocumentos=guardarDocumentos; window.guardarDocumentos=withSync(_guardarDocumentos);
+const _deleteDocumentos=deleteDocumentos;   window.deleteDocumentos=withSync(_deleteDocumentos);
 
 // Usuarios del sistema (admin)
 const _guardarSysUser=guardarSysUser;           window.guardarSysUser=withSync(_guardarSysUser);
